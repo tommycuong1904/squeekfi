@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A live, read-only Squeekchain dashboard." />
+    <title>SqueekFi — Squeekchain dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="glow glow-one"></div><div class="glow glow-two"></div>
+    <main>
+      <header>
+        <a class="brand" href="/" aria-label="SqueekFi home"><span class="mark">S</span><span>SqueekFi</span></a>
+        <div class="header-actions"><span id="connection" class="pill loading">Connecting</span><button id="refresh" class="refresh" type="button">Refresh</button></div>
+      </header>
+
+      <section class="hero">
+        <p class="eyebrow">SQUEEKCHAIN · SEPOLIA</p>
+        <h1>The wheel, <em>live.</em></h1>
+        <p class="lede">A read-only window into Squeekchain’s settled work, SQK issuance, and on-chain activity.</p>
+        <p id="updated" class="updated">Loading public data…</p>
+      </section>
+
+      <section class="metrics" aria-label="Core metrics">
+        <article class="metric feature"><p>Squeek block height</p><strong id="height">—</strong><span id="height-detail">Awaiting core state</span></article>
+        <article class="metric"><p>Settled work</p><strong id="work">—</strong><span id="work-detail">wheel units</span></article>
+        <article class="metric"><p>Difficulty</p><strong id="difficulty">—</strong><span id="difficulty-detail">work / 1k blocks</span></article>
+        <article class="metric"><p>SQK minted</p><strong id="minted">—</strong><span id="minted-detail">18-decimal SQK</span></article>
+      </section>
+
+      <section class="grid">
+        <article class="panel status-panel"><div class="panel-heading"><div><p class="eyebrow">PIPELINE</p><h2>Hamster status</h2></div><span id="pipeline-dot" class="status-dot"></span></div><div id="status-content" class="empty">Checking the measurement pipeline…</div></article>
+        <article class="panel"><div class="panel-heading"><div><p class="eyebrow">MEASUREMENT</p><h2>Wheel signals</h2></div></div><dl id="measurement" class="facts"><div><dt>Latest speed</dt><dd>—</dd></div><div><dt>Today’s work</dt><dd>—</dd></div><div><dt>Last measurement</dt><dd>—</dd></div></dl></article>
+      </section>
+
+      <section class="panel events"><div class="panel-heading"><div><p class="eyebrow">ON-CHAIN</p><h2>Recent activity</h2></div><a href="https://docs.squeekchain.com/developers/api/" target="_blank" rel="noreferrer">API docs ↗</a></div><div id="events" class="empty">Loading the event feed…</div></section>
+    </main>
+    <footer><span>Powered by the public Squeekchain API.</span><span>Read-only · no wallet required</span></footer>
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>
