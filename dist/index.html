@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="A live, read-only Squeekchain dashboard." />
-    <title>SqueekFi — Squeekchain dashboard</title>
+    <meta name="description" content="Follow certified hamster work through settlement, checkpointing, and holder rewards." />
+    <title>SqueekFi — Hamster-to-Holder Console</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
@@ -15,17 +15,21 @@
     <main>
       <header>
         <a class="brand" href="/" aria-label="SqueekFi home"><span class="mark">S</span><span>SqueekFi</span></a>
-        <div class="header-actions"><span id="connection" class="pill loading">Connecting</span><button id="refresh" class="refresh" type="button">Refresh</button></div>
+        <div class="header-actions"><span id="connection" class="pill loading">Connecting</span><button id="stream-mode" class="refresh" type="button" aria-pressed="false">Stream mode</button><button id="refresh" class="refresh" type="button">Refresh</button></div>
       </header>
 
       <section class="hero">
         <p class="eyebrow">SQUEEKCHAIN · SEPOLIA</p>
-        <h1>The wheel, <em>live.</em></h1>
-        <p class="lede">A read-only window into Squeekchain’s settled work, SQK issuance, and on-chain activity.</p>
+        <h1>From wheel to <em>wallet.</em></h1>
+        <p class="lede">A read-only companion that follows hamster work from hardware through Ethereum settlement, mining checkpoints, and holder rewards.</p>
         <p id="updated" class="updated">Loading public data…</p>
       </section>
 
+      <section class="panel journey"><div class="panel-heading"><div><p class="eyebrow">CERTIFIED WORK JOURNEY</p><h2>Hamster-to-holder timeline</h2></div><span class="certified">NO WALLET NEEDED</span></div><p class="panel-copy">Each stage is deliberately separate: live hardware can lead the chain; only settled and checkpointed data can support rewards.</p><div id="journey" class="journey-steps"><div class="journey-step"><span>01</span><strong>Hardware</strong><small>Reading…</small></div><div class="journey-step"><span>02</span><strong>Oracle</strong><small>Reading…</small></div><div class="journey-step"><span>03</span><strong>Settled</strong><small>Reading…</small></div><div class="journey-step"><span>04</span><strong>Checkpointed</strong><small>Reading…</small></div></div></section>
+
       <section class="grid feature-grid"><article class="panel tracker"><div class="panel-heading"><div><p class="eyebrow">CERTIFIED MILESTONE</p><h2>Block milestone tracker</h2></div><span class="certified">SETTLED ONLY</span></div><p class="panel-copy">Track a target against SqueekCore-certified state, never live projections.</p><form id="milestone-form" class="milestone-form"><label for="milestone-input">Target Squeek block</label><div><input id="milestone-input" inputmode="numeric" type="number" min="1" step="1" placeholder="5000" /><button type="submit">Track</button></div></form><div id="milestone-result" class="milestone-result">Loading certified height…</div></article><article class="panel account"><div class="panel-heading"><div><p class="eyebrow">PORTFOLIO LOOKUP</p><h2>Explore a Squeek account</h2></div></div><p class="panel-copy">Read public Squeeks, claimable SQK and power. No wallet connection.</p><form id="account-form" class="account-form"><label for="account-input">Sepolia address</label><div><input id="account-input" autocomplete="off" spellcheck="false" placeholder="0x…" /><button type="submit">Lookup</button></div></form><div id="account-result" class="account-result">Enter an address to inspect public account data.</div></article></section>
+
+      <section class="grid feature-grid"><article class="panel genesis"><div class="panel-heading"><div><p class="eyebrow">GENESIS LAUNCH WATCH</p><h2>Readiness, allocation, and receipts</h2></div><span id="genesis-badge" class="certified">CHECKING</span></div><p class="panel-copy">Launch information is read at the API’s safe chain block. A missing launch is not shown as zero.</p><div id="genesis-content" class="empty">Checking the Genesis launch projection…</div></article><article class="panel trust"><div class="panel-heading"><div><p class="eyebrow">TRUST PANEL</p><h2>What this view proves</h2></div></div><div id="trust-content" class="trust-list"><div><span>Safe chain block</span><strong>Reading…</strong></div><div><span>Confirmations</span><strong>Reading…</strong></div><div><span>Core identity</span><strong>Reading…</strong></div></div></article></section>
 
       <section class="metrics" aria-label="Core metrics">
         <article class="metric feature"><p>Squeek block height</p><strong id="height">—</strong><span id="height-detail">Awaiting core state</span></article>
@@ -41,7 +45,7 @@
 
       <section class="panel events"><div class="panel-heading"><div><p class="eyebrow">ON-CHAIN · 24H</p><h2>Certified settlements</h2></div><a href="https://docs.squeekchain.com/developers/api/" target="_blank" rel="noreferrer">API docs ↗</a></div><div id="events" class="empty">Loading certified settlement history…</div></section>
     </main>
-    <footer><span>Powered by the public Squeekchain API.</span><span>Read-only · no wallet required</span></footer>
+    <footer><span>Powered by the public Squeekchain API.</span><span>Read-only · settled data is not financial advice</span></footer>
     <script src="./app.js" type="module"></script>
   </body>
 </html>
