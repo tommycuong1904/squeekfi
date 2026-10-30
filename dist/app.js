@@ -20,11 +20,20 @@ function setMetric(id, value, detailId, detail) { $(id).textContent = value; if 
 function renderStatus(status) {
   const unavailable = status?.status === 'unavailable';
   $('pipeline-dot').classList.toggle('live', !unavailable);
-  const keys = [['Pipeline', get(status, ['pipelineStatus', 'status'])], ['Hamster', get(status, ['hamsterStatus', 'hamster'])], ['Updated', get(status, ['observedAt', 'updatedAt'])]];
+  const measurement = status?.measurement ?? {};
+  const keys = [
+    ['Pipeline', get(status?.builder, ['status']) ?? get(status, ['pipelineStatus', 'status'])],
+    ['Hamster', get(measurement, ['coreStatus', 'hamsterStatus', 'hamster'])],
+    ['Updated', get(status, ['generatedAt', 'observedAt', 'updatedAt'])],
+  ];
   $('status-content').innerHTML = `<div class="status-list">${keys.map(([name, value]) => `<div><span>${name}</span><strong>${value ?? '—'}</strong></div>`).join('')}</div>`;
 }
 function renderMeasurement(data) {
-  const values = [['Latest speed', get(data, ['speedMmPerSecond', 'rpmMilli', 'latestSpeed'])], ['Today’s work', get(data, ['todayWorkUnits', 'workUnits'])], ['Last measurement', get(data, ['measuredAt', 'updatedAt'])]];
+  const values = [
+    ['Latest speed', get(data, ['rpmMilli', 'speedMmPerSecond', 'latestSpeed'])],
+    ['Total work', get(data, ['cumulativeWorkUnits', 'workUnits'])],
+    ['Last measurement', get(data, ['observedAt', 'measuredAt', 'updatedAt'])],
+  ];
   $('measurement').innerHTML = values.map(([name, value]) => `<div><dt>${name}</dt><dd>${display(value)}</dd></div>`).join('');
 }
 function renderEvents(data) {
@@ -38,20 +47,27 @@ function renderEvents(data) {
 }
 async function load() {
   $('connection').textContent = 'Refreshing'; $('connection').className = 'pill loading';
-  try {
-    const [status, core, measurement, mining, events] = await Promise.all([
-      fetchJson('/status'), fetchJson('/core'), fetchJson('/measurement/stats'), fetchJson('/mining/state'), fetchJson('/events'),
-    ]);
-    setMetric('height', display(get(core, ['blockHeight', 'completedBlockHeight'])), 'height-detail', `Ethereum block ${display(get(core, ['ethereumBlockNumber', 'blockNumber']))}`);
-    setMetric('work', display(get(core, ['cumulativeWork', 'cumulativeWorkUnits'])), 'work-detail', 'wheel work units');
-    setMetric('difficulty', display(get(core, ['workPerThousandBlocks', 'difficulty'])), 'difficulty-detail', 'work / 1k blocks');
-    setMetric('minted', sqk(get(mining, ['mintedBaseUnits', 'totalMintedBaseUnits', 'issuedBaseUnits'])), 'minted-detail', 'SQK issued');
-    renderStatus(status); renderMeasurement(measurement); renderEvents(events);
-    $('connection').textContent = 'Live'; $('connection').className = 'pill';
-    $('updated').textContent = `Last refreshed ${new Date().toLocaleTimeString()}`;
-  } catch (error) {
-    console.error(error); $('connection').textContent = 'API unavailable'; $('connection').className = 'pill error';
+  const entries = await Promise.allSettled([
+    fetchJson('/status'), fetchJson('/core'), fetchJson('/economy/state'), fetchJson('/events'),
+  ]);
+  const [status, core, economy, events] = entries.map((entry) => entry.status === 'fulfilled' ? entry.value : null);
+  const failures = entries.filter((entry) => entry.status === 'rejected');
+  if (!status && !core && !economy && !events) {
+    console.error(entries); $('connection').textContent = 'API unavailable'; $('connection').className = 'pill error';
     $('updated').textContent = 'Public API could not be reached. Try refreshing in a moment.';
+    return;
   }
+
+  const coreState = core?.core ?? core ?? {};
+  const supply = economy?.supply ?? economy ?? {};
+  setMetric('height', display(get(coreState, ['blockHeight', 'completedBlockHeight'])), 'height-detail', `Ethereum block ${display(get(core?.source, ['blockNumber']) ?? get(core, ['ethereumBlockNumber', 'blockNumber']))}`);
+  setMetric('work', display(get(coreState, ['cumulativeWork', 'cumulativeWorkUnits'])), 'work-detail', 'wheel work units');
+  setMetric('difficulty', display(get(coreState, ['workPerThousandBlocks', 'difficulty'])), 'difficulty-detail', 'work / 1k blocks');
+  setMetric('minted', sqk(get(supply, ['totalMintedBaseUnits', 'miningMintedBaseUnits'])), 'minted-detail', 'SQK issued');
+  if (status) { renderStatus(status); renderMeasurement(status.measurement ?? {}); }
+  if (events) renderEvents(events);
+  $('connection').textContent = failures.length ? 'Partial data' : 'Live';
+  $('connection').className = failures.length ? 'pill loading' : 'pill';
+  $('updated').textContent = `Last refreshed ${new Date().toLocaleTimeString()}${failures.length ? ` · ${failures.length} source unavailable` : ''}`;
 }
 $('refresh').addEventListener('click', load); load(); setInterval(load, 30_000);
